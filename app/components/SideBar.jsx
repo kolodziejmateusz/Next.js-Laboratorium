@@ -5,9 +5,7 @@ function SideBar({ children }) {
   return (
     <div className="drawer drawer-open">
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-content flex justify-center items-center">
-        {children}
-      </div>
+      <div className="drawer-content mx-auto m-4">{children}</div>
       <div className="drawer-side">
         <label
           htmlFor="my-drawer"
@@ -22,9 +20,9 @@ function SideBar({ children }) {
             </Link>
           </li>
           <li>
-            <Link href="/user/logout">
+            <Link href="/user/register">
               <FcWorkflow />
-              222
+              Register
             </Link>
           </li>
         </ul>
