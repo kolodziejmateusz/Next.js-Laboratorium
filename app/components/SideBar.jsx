@@ -5,7 +5,7 @@ function SideBar({ children }) {
   return (
     <div className="drawer drawer-open">
       <input id="my-drawer" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-content mx-auto m-4">{children}</div>
+      <div className="drawer-content mx-auto m-4 w-4/6">{children}</div>
       <div className="drawer-side">
         <label
           htmlFor="my-drawer"
