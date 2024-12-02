@@ -24,6 +24,14 @@ function SideBar({ children }) {
               <FcWorkflow />
               Register
             </Link>
+            <Link href="/user/profile">
+              <FcWorkflow />
+              Profile
+            </Link>
+            <Link href="/user/logout">
+              <FcWorkflow />
+              Logout
+            </Link>
           </li>
         </ul>
       </div>
