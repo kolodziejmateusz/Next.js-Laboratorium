@@ -1,9 +1,19 @@
 "use client";
 
+import {
+  browserLocalPersistence,
+  browserSessionPersistence,
+  setPersistence,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { useParams } from "next/navigation";
+import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 // import { useForm } from "react-hook-form/dist/index.esm";
 
 function LoginForm() {
+  const returnUrl = useParams().get("returnUrl");
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -11,12 +21,30 @@ function LoginForm() {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {};
+  const onSubmit = (data) => {
+    setPersistence(auth, browserSessionPersistence).then(() => {
+      signInWithEmailAndPassword(auth, data.email, data.password).then(
+        (userCredential) => {
+          console.log("User logged!");
+          if (!userCredential?.user.emailVerified) {
+            router.replace("/users/verified");
+            return;
+          }
+
+          if (returnUrl) {
+            router.push(returnUrl);
+          } else {
+            router.push("/");
+          }
+        }
+      );
+    });
+  };
 
   return (
     <>
       <div className="h-4/5">
-        <form onSubmit={onSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <label className="input input-bordered flex items-center gap-2 mb-4 mt-4">
             <svg
               xmlns="http://www.w3.org/2000/svg"

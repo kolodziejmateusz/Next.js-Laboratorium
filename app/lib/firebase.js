@@ -9,12 +9,12 @@ import { getAnalytics } from "firebase/analytics";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: process.env.API_KEY,
+  apiKey: process.env.NEXT_PUBLIC_API_KEY,
   authDomain: "nextjs-laboratorium.firebaseapp.com",
   projectId: "nextjs-laboratorium",
   storageBucket: "nextjs-laboratorium.firebasestorage.app",
   messagingSenderId: "824097786755",
-  appId: process.env.APP_ID,
+  appId: "1:824097786755:web:ecb256d733f7f31a7bc4b6",
   measurementId: "G-V3JSSDYPXT",
 };
 
