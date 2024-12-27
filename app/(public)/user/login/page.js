@@ -1,50 +1,45 @@
 "use client";
-
 import {
-  browserLocalPersistence,
-  browserSessionPersistence,
-  setPersistence,
   signInWithEmailAndPassword,
+  setPersistence,
+  browserSessionPersistence,
+  onAuthStateChanged,
 } from "firebase/auth";
-import { useParams } from "next/navigation";
-import { useRouter } from "next/router";
-import { useForm } from "react-hook-form";
-// import { useForm } from "react-hook-form/dist/index.esm";
-
-function LoginForm() {
-  const returnUrl = useParams().get("returnUrl");
+import { getAuth } from "firebase/auth";
+import { useSearchParams, useRouter } from "next/navigation";
+export default function LoginForm() {
+  const auth = getAuth();
+  const params = useSearchParams();
   const router = useRouter();
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm();
+  const returnUrl = params.get("returnUrl");
+  const onSubmit = (e) => {
+    e.preventDefault();
+    const email = e.target["email"].value;
+    const password = e.target["password"].value;
 
-  const onSubmit = (data) => {
-    setPersistence(auth, browserSessionPersistence).then(() => {
-      signInWithEmailAndPassword(auth, data.email, data.password).then(
-        (userCredential) => {
-          console.log("User logged!");
-          if (!userCredential?.user.emailVerified) {
-            router.replace("/users/verified");
-            return;
-          }
-
-          if (returnUrl) {
-            router.push(returnUrl);
-          } else {
-            router.push("/");
-          }
-        }
-      );
-    });
+    setPersistence(auth, browserSessionPersistence)
+      .then(() => {
+        signInWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            // Upewnij się, że returnUrl istnieje, w przeciwnym razie przekieruj na "/"
+            const redirectUrl = returnUrl ? returnUrl : "/";
+            router.push(redirectUrl);
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.error(errorCode, errorMessage);
+          });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (
     <>
       <div className="h-4/5">
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={onSubmit}>
           <label className="input input-bordered flex items-center gap-2 mb-4 mt-4">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -61,20 +56,6 @@ function LoginForm() {
               placeholder="Email"
               id="email"
               name="email"
-              {...register("email", {
-                required: {
-                  value: true,
-                  message: "Proszę podać email",
-                },
-                maxLength: {
-                  value: 40,
-                  message: "Email może mieć maksymalnie 40 znaków",
-                },
-                pattern: {
-                  value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-                  message: "Niepoprawny adres email!",
-                },
-              })}
             />
           </label>
 
@@ -97,13 +78,6 @@ function LoginForm() {
               name="password"
               type="password"
               placeholder="Your password"
-              {...register("password", {
-                required: "Wymagane jest podanie hasła",
-                maxLength: {
-                  value: 20,
-                  message: "Hasło jest zbyt długie",
-                },
-              })}
             />
           </label>
 
@@ -115,5 +89,3 @@ function LoginForm() {
     </>
   );
 }
-
-export default LoginForm;
