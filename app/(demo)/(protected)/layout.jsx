@@ -12,12 +12,12 @@ function Protected({ children }) {
     console.dir(user?.emailVerified);
     if (!user) {
       console.log("User not logged!");
-      redirect(`/users/login?returnUrl=${returnUrl}`);
+      redirect(`/user/login?returnUrl=${returnUrl}`);
     }
-    if (!user?.emailVerified) {
-      console.log("User not verified!");
-      redirect(`/users/verified`);
-    }
+    // if (!user?.emailVerified) {
+    //   console.log("User not verified!");
+    //   redirect(`/user/verified`);
+    // }
   }, []);
   return <>{children}</>;
 }

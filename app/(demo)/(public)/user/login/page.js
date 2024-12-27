@@ -21,6 +21,10 @@ export default function LoginForm() {
       .then(() => {
         signInWithEmailAndPassword(auth, email, password)
           .then((userCredential) => {
+            console.log(auth);
+            console.log(email);
+            console.log(password);
+            console.log("user logged");
             // Upewnij się, że returnUrl istnieje, w przeciwnym razie przekieruj na "/"
             const redirectUrl = returnUrl ? returnUrl : "/";
             router.push(redirectUrl);
