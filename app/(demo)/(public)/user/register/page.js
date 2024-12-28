@@ -1,69 +1,109 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+"use client";
+import { useState } from "react";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
+import { useAuth } from "@/app/lib/AuthContext";
+import { redirect } from "next/navigation";
+
 function RegisterForm() {
+  const { user } = useAuth();
+
+  if (user) {
+    return null;
+  }
+
+  const auth = getAuth();
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const [registerError, setRegisterError] = useState(""); // Stan błędu rejestracji
+
+  // Obsługa zmian w polach formularza
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const onSubmit = (e) => {
+    e.preventDefault(); // Zatrzymanie domyślnego wysyłania formularza
+    const { email, password, confirmPassword } = formData;
+
+    // Walidacja haseł
+    if (password !== confirmPassword) {
+      setRegisterError("Hasła nie są zgodne.");
+      return;
+    }
+
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        console.log("Zarejestrowano użytkownika!");
+        sendEmailVerification(auth.currentUser).then(() => {
+          console.log("Wysłano e-mail weryfikacyjny!");
+          redirect("/user/verify");
+        });
+      })
+      .catch((error) => {
+        setRegisterError(error.message);
+        console.dir(error);
+      });
+  };
+
   return (
-    <>
-      <div className="h-4/5">
-        <form>
-          <label className="input input-bordered flex items-center gap-2 mb-4 mt-4">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              className="h-4 w-4 opacity-70"
-            >
-              <path d="M2.5 3A1.5 1.5 0 0 0 1 4.5v.793c.026.009.051.02.076.032L7.674 8.51c.206.1.446.1.652 0l6.598-3.185A.755.755 0 0 1 15 5.293V4.5A1.5 1.5 0 0 0 13.5 3h-11Z" />
-              <path d="M15 6.954 8.978 9.86a2.25 2.25 0 0 1-1.956 0L1 6.954V11.5A1.5 1.5 0 0 0 2.5 13h11a1.5 1.5 0 0 0 1.5-1.5V6.954Z" />
-            </svg>
-            <input type="email" className="grow" placeholder="Email" required />
-          </label>
+    <div className="h-4/5">
+      <form onSubmit={onSubmit}>
+        <label className="input input-bordered flex items-center gap-2 mb-4 mt-4">
+          <input
+            type="email"
+            name="email"
+            className="grow"
+            placeholder="Email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+        </label>
 
-          <label className="input input-bordered flex items-center gap-2 mb-4">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              className="h-4 w-4 opacity-70"
-            >
-              <path
-                fillRule="evenodd"
-                d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <input
-              type="password"
-              className="grow"
-              placeholder="Password"
-              required
-            />
-          </label>
+        <label className="input input-bordered flex items-center gap-2 mb-4">
+          <input
+            type="password"
+            name="password"
+            className="grow"
+            placeholder="Hasło"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
+        </label>
 
-          <label className="input input-bordered flex items-center gap-2 mb-4">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              className="h-4 w-4 opacity-70"
-            >
-              <path
-                fillRule="evenodd"
-                d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <input
-              type="password"
-              className="grow"
-              placeholder="Confirm Password"
-              required
-            />
-          </label>
+        <label className="input input-bordered flex items-center gap-2 mb-4">
+          <input
+            type="password"
+            name="confirmPassword"
+            className="grow"
+            placeholder="Potwierdź hasło"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            required
+          />
+        </label>
 
-          <button type="submit" className="btn btn-accent w-full mt-3">
-            Register
-          </button>
-        </form>
-      </div>
-    </>
+        <button type="submit" className="btn btn-accent w-full mt-3">
+          Zarejestruj się
+        </button>
+
+        {registerError && <p className="text-red-500 mt-2">{registerError}</p>}
+      </form>
+    </div>
   );
 }
 
