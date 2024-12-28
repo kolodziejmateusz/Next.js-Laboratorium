@@ -26,7 +26,7 @@ export default function LoginForm() {
             console.log(password);
             console.log("user logged");
             // Upewnij się, że returnUrl istnieje, w przeciwnym razie przekieruj na "/"
-            const redirectUrl = returnUrl ? returnUrl : "/";
+            const redirectUrl = returnUrl ? returnUrl : "/user/profile";
             router.push(redirectUrl);
           })
           .catch((error) => {
