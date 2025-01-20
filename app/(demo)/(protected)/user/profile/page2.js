@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { getAuth, updateProfile } from "firebase/auth";
-import { db } from "@/app/lib/firebase";
+import { db } from "@/app/lib/firebase/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 
 function Profile() {
@@ -61,12 +61,14 @@ function Profile() {
     setSuccess("");
 
     try {
+      // Aktualizacja profilu użytkownika
       await updateProfile(user, {
         displayName: formData.displayName,
         photoURL: formData.photoURL,
       });
       console.log("Profile updated");
 
+      // Tworzenie/aktualizacja dokumentu użytkownika w kolekcji "users"
       await setDoc(doc(db, "users", user?.uid), {
         address: {
           street: formData.street,
@@ -125,6 +127,7 @@ function Profile() {
           />
         </label>
 
+        {/* Nowe pola dla adresu */}
         <label className="input input-bordered flex items-center gap-2 mb-4">
           <input
             type="text"

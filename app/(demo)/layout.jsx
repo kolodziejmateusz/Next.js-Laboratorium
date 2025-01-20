@@ -60,6 +60,14 @@ function DemoLayout({ children }) {
                 </Link>
               </li>
             )}
+            {user && (
+              <li>
+                <Link href="/user/movies">
+                  <FcWorkflow />
+                  Movies
+                </Link>
+              </li>
+            )}
           </ul>
         </div>
       </div>
